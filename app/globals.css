@@ -186,8 +186,7 @@ html[data-theme="dark"] .text-button:focus-visible { background: var(--dark-surf
 .home-content { padding-top: 0; }
 .hero-sprite { position: relative; height: 300vh; }
 .hero-sprite-sticky { position: sticky; top: 72px; display: grid; place-items: center; height: calc(100vh - 72px); overflow: hidden; }
-.sprite-stage { position: relative; z-index: 1; width: 92vw; max-width: 720px; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 24px; background: var(--off-white); -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%); }
-.sprite-canvas { display: block; width: 100%; height: 100%; mix-blend-mode: multiply; }
+.sprite-stage { position: relative; z-index: 1; width: 92vw; max-width: 720px; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 24px; background: var(--off-white); background-repeat: no-repeat; background-size: 500% 500%; background-position: center center; mix-blend-mode: multiply; -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%); }
 .sprite-error { position: absolute; top: 50%; right: 24px; left: 24px; margin: 0; transform: translateY(-50%); color: var(--muted); text-align: center; }
 .hero-heading { position: absolute; right: 1rem; bottom: 9%; left: 1rem; z-index: 3; text-align: center; }
 .hero-heading-hidden { visibility: hidden; }
@@ -232,7 +231,7 @@ html[data-theme="dark"] .site-header { background: color-mix(in srgb, var(--dark
 html[data-theme="dark"] .marquee { border-color: var(--dark-border); background: var(--dark-card); color: var(--off-white); }
 html[data-theme="dark"] .hero-heading .eyebrow { color: var(--sky-blue); }
 html[data-theme="dark"] .sprite-stage { background: var(--off-white); }
-html[data-theme="dark"] .sprite-canvas { mix-blend-mode: normal; }
+html[data-theme="dark"] .sprite-stage { mix-blend-mode: normal; }
 
 /* The JPG needs this light stage in dark mode. Replace it with a transparent WebP later, then remove this background and blend mode. */
 
