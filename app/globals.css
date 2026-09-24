@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f3efe7;
+  --ink: #1d1c1a;
+  --muted: #6d6a63;
+  --line: #d6d0c5;
+  --accent: #d44c36;
+  --soft: #e7e0d5;
+}
+
+@theme inline {
+  --font-sans: var(--font-roboto);
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--paper); }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-roboto), sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.site-body { min-height: 100vh; display: flex; flex-direction: column; }
+.site-main { flex: 1; }
+.page-shell { width: min(100% - 32px, 1120px); margin: 0 auto; }
+.site-header { border-bottom: 1px solid var(--line); }
+.header-inner { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.wordmark { font-weight: 700; letter-spacing: .08em; }
+.nav-links, .footer-links { display: flex; gap: 16px; }
+.nav-links a, .footer-links a { color: var(--muted); transition: color .2s ease; }
+.nav-links a:hover, .footer-links a:hover, .social-list a:hover { color: var(--accent); }
+.home-content, .page-content { padding-top: 48px; padding-bottom: 64px; }
+.hero-grid { display: grid; gap: 24px; align-items: stretch; }
+.hero-copy, .hero-visual, .about-card, .contact-panel { border: 1px solid var(--line); }
+.hero-copy { min-height: 370px; display: flex; flex-direction: column; justify-content: space-between; padding: 24px; background: var(--soft); }
+.eyebrow, .section-label { margin: 0; color: var(--muted); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+.brand-title, .page-title { max-width: 420px; margin: auto 0 12px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+.hero-description { max-width: 330px; margin: 0 0 28px; }
+.image-frame { position: relative; overflow: hidden; background: #d9d0c2; }
+.hero-visual { min-height: 370px; }
+.object-contain { object-fit: contain; padding: 14%; }
+.image-note { position: absolute; right: 12px; bottom: 10px; color: var(--muted); font-size: 10px; }
+.primary-button, .text-button { display: inline-flex; align-items: center; gap: 10px; width: fit-content; border-bottom: 1px solid currentColor; padding-bottom: 4px; font-weight: 700; }
+.primary-button { border: 0; background: var(--accent); color: #fffaf3; padding: 10px 14px; }
+.home-details { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+.detail-block { border-top: 1px solid var(--line); padding-top: 12px; }
+.detail-block p:last-child { max-width: 350px; margin: 8px 0 0; }
+.page-intro { margin-bottom: 32px; }
+.page-title { margin-top: 12px; font-size: 18px; letter-spacing: -.01em; }
+.about-grid { display: grid; gap: 24px; }
+.about-card { background: #faf7f1; }
+.photo-card { padding: 12px; }
+.profile-frame { min-height: 310px; }
+.card-copy { padding: 20px 8px 8px; display: flex; flex-direction: column; gap: 12px; }
+.card-copy p { margin: 0; }
+.resume-card { padding: 24px; }
+.resume-section { border-top: 1px solid var(--line); padding: 16px 0; }
+.resume-section:first-child { border-top: 0; padding-top: 0; }
+.resume-section h2 { margin: 0 0 8px; font-size: 14px; line-height: 1.2; }
+.resume-section p { margin: 0; }
+.resume-text { white-space: pre-line; }
+.resume-card .text-button { margin-top: 12px; }
+.contact-content { max-width: 760px; }
+.contact-panel { display: grid; gap: 32px; padding: 24px; background: var(--soft); }
+.contact-email { display: inline-block; margin-top: 8px; font-weight: 700; }
+.social-list { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.social-list .section-label { margin-bottom: 2px; }
+.site-footer { border-top: 1px solid var(--line); }
+.footer-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding-top: 24px; padding-bottom: 24px; }
+.footer-links { margin-top: 10px; flex-wrap: wrap; }
+.copyright { align-self: end; justify-self: end; margin: 0; color: var(--muted); }
+
+@media (min-width: 768px) {
+  .page-shell { width: min(100% - 64px, 1120px); }
+  .hero-grid, .about-grid { grid-template-columns: 1fr 1fr; }
+  .hero-copy, .hero-visual { min-height: 500px; }
+  .about-card { min-height: 580px; }
+  .profile-frame { min-height: 360px; }
+  .contact-panel { grid-template-columns: 1fr 1fr; min-height: 260px; }
+}
