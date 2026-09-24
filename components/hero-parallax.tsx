@@ -1,86 +1,100 @@
 "use client";
 
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import ImagePlaceholder from "@/components/image-placeholder";
 
-type Frame = { row: number; col: number };
+// /public/hero-glasses.png (transparent PNG). The frame below has a fixed
+// aspect ratio, so the layout no longer depends on the file's intrinsic size.
+const HERO_SRC = "/hero-glasses.png";
+const HERO_WIDTH = 837;
+const HERO_HEIGHT = 374;
 
-// Reorder or remove frames here. The last row skips its two empty cells.
-export const FRAME_ORDER: Frame[] = [
-  ...[0, 1, 2, 3, 4].map((col) => ({ row: 0, col })),
-  ...[0, 1, 2, 3, 4].map((col) => ({ row: 1, col })),
-  ...[0, 1, 2, 3, 4].map((col) => ({ row: 2, col })),
-  ...[0, 1, 2, 3, 4].map((col) => ({ row: 3, col })),
-  { row: 4, col: 0 },
-  { row: 4, col: 1 },
-  { row: 4, col: 4 },
-];
+// One shared reveal range. The glow and the heading both read the same
+// --reveal value (0 to 1), so they always fade in together.
+// Starts almost immediately on scroll, finishes after 40% of a viewport height.
+const REVEAL_START_PX = 4;
+const REVEAL_END_VH = 0.4;
 
-const SPRITE_URL = "/eyeglasses-spritesheet.jpg";
-const GRID_SIZE = 5;
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
 export default function HeroParallax() {
-  const heroRef = useRef<HTMLElement>(null);
-  const frameRequestRef = useRef<number | null>(null);
-  const pendingFrameRef = useRef(0);
-  const [frameIndex, setFrameIndex] = useState(0);
-  const [imageState, setImageState] = useState<"loading" | "ready" | "error">("loading");
-  const reducedMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const textY = useTransform(scrollYProgress, [0.6, 0.85], [24, 0]);
-  const textOpacity = useTransform(scrollYProgress, [0.6, 0.85], [0, 1]);
-
-  const commitFrame = useCallback((nextFrame: number) => {
-    pendingFrameRef.current = nextFrame;
-    if (frameRequestRef.current !== null) return;
-    frameRequestRef.current = window.requestAnimationFrame(() => {
-      frameRequestRef.current = null;
-      setFrameIndex(pendingFrameRef.current);
-    });
-  }, []);
-
-  useMotionValueEvent(scrollYProgress, "change", (progress) => {
-    if (reducedMotion || imageState !== "ready") return;
-    const scrubProgress = Math.min(Math.max(progress / 0.75, 0), 1);
-    commitFrame(Math.round(scrubProgress * (FRAME_ORDER.length - 1)));
-  });
+  const rootRef = useRef<HTMLElement | null>(null);
+  const [imageFailed, setImageFailed] = useState(false);
 
   useEffect(() => {
-    const image = new window.Image();
-    image.src = SPRITE_URL;
-    image.onload = async () => {
-      try {
-        await image.decode();
-        setImageState("ready");
-      } catch {
-        setImageState("error");
+    const root = rootRef.current;
+    if (!root) return;
+
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const end = Math.max(window.innerHeight * REVEAL_END_VH, REVEAL_START_PX + 1);
+      const raw = (window.scrollY - REVEAL_START_PX) / (end - REVEAL_START_PX);
+      const progress = Math.min(1, Math.max(0, raw));
+      root.style.setProperty("--reveal", easeOutCubic(progress).toFixed(3));
+    };
+
+    // Keep the sticky offset equal to the real navbar height.
+    const syncHeaderHeight = () => {
+      const header = document.querySelector<HTMLElement>(".site-header");
+      if (header) {
+        document.documentElement.style.setProperty("--header-h", `${header.offsetHeight}px`);
       }
     };
-    image.onerror = () => setImageState("error");
+
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+
+    const onResize = () => {
+      syncHeaderHeight();
+      onScroll();
+    };
+
+    syncHeaderHeight();
+    update();
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
 
     return () => {
-      if (frameRequestRef.current !== null) window.cancelAnimationFrame(frameRequestRef.current);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
 
-  const frame = FRAME_ORDER[frameIndex];
-  const backgroundPosition = `${(frame.col / (GRID_SIZE - 1)) * 100}% ${(frame.row / (GRID_SIZE - 1)) * 100}%`;
-
   return (
-    <section className="hero-sprite" ref={heroRef} aria-labelledby="hero-title">
-      <div className="hero-sprite-sticky">
-        <div
-          className={`sprite-stage ${imageState === "ready" ? "sprite-ready" : ""}`}
-          role="img"
-          aria-label="Rotating view of BeU eyeglasses"
-          style={imageState === "ready" ? { backgroundImage: `url(${SPRITE_URL})`, backgroundPosition } : undefined}
-        >
-          {imageState === "error" && <p className="sprite-error">The eyeglasses preview is unavailable.</p>}
+    <section ref={rootRef} className="hero-parallax" aria-label="BeU hero">
+      <div className="hero-sticky">
+        <div className="hero-image-wrap">
+          <div className="hero-image-frame">
+            <div className="hero-glow" aria-hidden="true" />
+            {imageFailed ? (
+              <div className="hero-image-fallback">
+                <ImagePlaceholder label="BeU eyeglasses" />
+              </div>
+            ) : (
+              <Image
+                className="hero-image-asset"
+                src={HERO_SRC}
+                alt="BeU eyeglasses"
+                width={HERO_WIDTH}
+                height={HERO_HEIGHT}
+                sizes="(max-width: 767px) 92vw, 820px"
+                priority
+                onError={() => setImageFailed(true)}
+              />
+            )}
+          </div>
         </div>
-        <motion.div className={`hero-heading ${imageState === "ready" ? "" : "hero-heading-hidden"}`} style={{ y: reducedMotion ? 0 : textY, opacity: reducedMotion ? 1 : textOpacity }}>
-          <p className="eyebrow">Designed by BeUs</p>
-          <h1 id="hero-title">Be Your Best View, Be U</h1>
-        </motion.div>
+
+        <div className="hero-heading">
+          <p className="eyebrow">BeUs presents</p>
+          <h1>Be Your Best View, Be U</h1>
+        </div>
       </div>
     </section>
   );

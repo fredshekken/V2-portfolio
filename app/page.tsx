@@ -1,4 +1,4 @@
-import HeroParallax from "../components/hero-parallax";
+import HeroParallax from "@/components/hero-parallax";
 import ImageWithFallback from "@/components/image-with-fallback";
 import ProductCarousel from "@/components/product-carousel";
 import ImagePlaceholder from "@/components/image-placeholder";

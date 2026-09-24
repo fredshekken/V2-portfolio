@@ -17,6 +17,9 @@
   --text: var(--ink);
   --line: #c7cbd8;
   --muted: #50566a;
+  --glow-core: rgba(255, 255, 255, .9);
+  --glow-mid: rgba(255, 255, 255, .45);
+  --glow-halo: rgba(168, 188, 232, .14);
 }
 
 @theme inline {
@@ -40,6 +43,9 @@ html[data-theme="dark"] {
   --text: var(--off-white);
   --line: var(--dark-border);
   --muted: #c3c9dd;
+  --glow-core: rgba(255, 255, 255, .16);
+  --glow-mid: rgba(255, 255, 255, .07);
+  --glow-halo: transparent;
   color-scheme: dark;
 }
 
@@ -50,6 +56,9 @@ html[data-theme="dark"] {
     --text: var(--off-white);
     --line: var(--dark-border);
     --muted: #c3c9dd;
+    --glow-core: rgba(255, 255, 255, .16);
+    --glow-mid: rgba(255, 255, 255, .07);
+    --glow-halo: transparent;
     color-scheme: dark;
   }
 }
@@ -184,14 +193,16 @@ html[data-theme="dark"] .text-button:focus-visible { background: var(--dark-surf
 .theme-toggle[aria-checked="true"] { background: var(--dark-card); border-color: var(--sky-blue); color: var(--off-white); }
 .theme-toggle[aria-checked="true"] .theme-thumb { transform: translateX(28px); background: var(--brand-blue); }
 .home-content { padding-top: 0; }
-.hero-sprite { position: relative; height: 300vh; }
-.hero-sprite-sticky { position: sticky; top: 72px; display: grid; place-items: center; height: calc(100vh - 72px); overflow: hidden; }
-.sprite-stage { position: relative; z-index: 1; width: 92vw; max-width: 720px; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 24px; background: var(--off-white); background-repeat: no-repeat; background-size: 500% 500%; background-position: center center; mix-blend-mode: multiply; -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%); }
-.sprite-error { position: absolute; top: 50%; right: 24px; left: 24px; margin: 0; transform: translateY(-50%); color: var(--muted); text-align: center; }
-.hero-heading { position: absolute; right: 1rem; bottom: 9%; left: 1rem; z-index: 3; text-align: center; }
-.hero-heading-hidden { visibility: hidden; }
+.hero-parallax { --reveal: 0; position: relative; height: 170vh; }
+.hero-sticky { position: sticky; top: var(--header-h, 72px); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: calc(100vh - var(--header-h, 72px)); overflow: hidden; padding-top: 4vh; }
+.hero-image-wrap { position: relative; z-index: 1; display: flex; justify-content: center; width: 100%; }
+.hero-image-frame { position: relative; width: min(72vw, 820px); }
+.hero-image-fallback { position: relative; width: 100%; aspect-ratio: 837 / 374; }
+.hero-glow { position: absolute; top: 50%; left: 50%; z-index: 0; width: 150%; height: 190%; pointer-events: none; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(ellipse at center, var(--glow-core) 0%, var(--glow-mid) 30%, var(--glow-halo) 48%, transparent 70%); opacity: var(--reveal); }
+.hero-image-asset { position: relative; z-index: 1; display: block; width: 100%; height: auto; }
+.hero-heading { position: relative; z-index: 2; width: min(100% - 32px, 920px); margin-top: 3vh; text-align: center; opacity: var(--reveal); transform: translateY(calc((1 - var(--reveal)) * 24px)); }
 .hero-heading .eyebrow { color: var(--deep-blue); }
-.hero-heading h1 { max-width: 850px; margin: 8px auto 0; color: var(--text); font-size: clamp(2.25rem, 8vw, 6rem); line-height: 1; letter-spacing: -.06em; }
+.hero-heading h1 { max-width: 850px; margin: 8px auto 0; color: var(--text); font-size: clamp(2.25rem, 6vw, 4.5rem); line-height: 1.05; letter-spacing: -.05em; text-wrap: balance; }
 .image-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: linear-gradient(135deg, var(--sky-blue), var(--blue-tint)); color: var(--deep-blue); text-align: center; }
 .image-placeholder span { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
 .marquee { width: 100%; overflow: hidden; border-top: 1px solid var(--deep-blue); border-bottom: 1px solid var(--deep-blue); background: var(--deep-blue); color: var(--pure-white); }
@@ -230,10 +241,13 @@ html[data-theme="dark"] .text-button:focus-visible { background: var(--dark-surf
 html[data-theme="dark"] .site-header { background: color-mix(in srgb, var(--dark-surface) 80%, transparent); }
 html[data-theme="dark"] .marquee { border-color: var(--dark-border); background: var(--dark-card); color: var(--off-white); }
 html[data-theme="dark"] .hero-heading .eyebrow { color: var(--sky-blue); }
-html[data-theme="dark"] .sprite-stage { background: var(--off-white); }
-html[data-theme="dark"] .sprite-stage { mix-blend-mode: normal; }
+html[data-theme="dark"] .hero-image-asset { filter: drop-shadow(0 8px 24px rgba(0, 0, 0, .5)); }
+html[data-theme="dark"] .hero-glow { mix-blend-mode: screen; }
 
-/* The JPG needs this light stage in dark mode. Replace it with a transparent WebP later, then remove this background and blend mode. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero-image-asset { filter: drop-shadow(0 8px 24px rgba(0, 0, 0, .5)); }
+  :root:not([data-theme="light"]) .hero-glow { mix-blend-mode: screen; }
+}
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .site-header { background: color-mix(in srgb, var(--dark-surface) 80%, transparent); }
@@ -242,6 +256,8 @@ html[data-theme="dark"] .sprite-stage { mix-blend-mode: normal; }
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; overflow-x: auto; }
+  .hero-glow { opacity: .6 !important; }
+  .hero-heading { opacity: 1 !important; transform: none !important; }
 }
 
 @media (min-width: 768px) {
@@ -256,8 +272,9 @@ html[data-theme="dark"] .sprite-stage { mix-blend-mode: normal; }
   .nav-links { position: absolute; top: 56px; right: 0; display: none; flex-direction: column; align-items: stretch; min-width: 180px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 12px 32px rgba(26, 29, 46, .12); }
   .nav-links.open { display: flex; }
   .nav-links a { justify-content: flex-start; }
-  .hero-sprite { height: 200vh; }
   .hero-heading h1 { font-size: clamp(2.25rem, 12vw, 4rem); }
+  .hero-parallax { height: 140vh; }
+  .hero-image-frame { width: 92vw; }
   .carousel-footer { align-items: flex-start; flex-direction: column; }
   .carousel-footer .primary-button { width: 100%; }
 }
